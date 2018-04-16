@@ -1,0 +1,9 @@
+.app {
+  width: 100%;
+  margin: 20px auto;
+}
+
+.app > .input {
+  width: 100%;
+  margin: 20px;
+}
