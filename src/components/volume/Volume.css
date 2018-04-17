@@ -1,0 +1,18 @@
+.progress-bar {
+    position: relative;
+    background-color: #52554c;
+    width: 60%;
+    height: 21px;
+    margin-right: 10px;
+}
+
+.progress-bar .progress-bar-track {
+    visibility: visible;
+    left: 0;
+    height: 20px;
+    background-color: #3c3c3c;
+}
+
+.progress-bar-volume {
+    width: 30%;
+}

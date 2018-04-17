@@ -15,9 +15,10 @@ export class App extends Component {
   resetCurrentTrack = () => {
     const { actions, playerState } = this.props;
 
-    if (playerState.progress > 0) {
-      actions.resetCurrentTrack();
+    if (!playerState.isPlaying) {
+      this._audio._player.currentTime = 0;
     }
+    actions.resetCurrentTrack();
   };
 
   handleClickTrack = (track) => {
@@ -80,7 +81,7 @@ export class App extends Component {
     };
 
     handleSetProgress = (progress) => {
-      this.props.actions.setProgress(progress === null ? 0 : progress);
+      this.props.actions.setProgress(progress);
     };
 
     handleSetVolume = (volume) => {
