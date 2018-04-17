@@ -1,0 +1,31 @@
+
+.track-list_item {
+  background: #fafafa;
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  margin: 5px 0;
+}
+
+.track-list_item__select {
+  border: 1px solid #3366BB;
+}
+.track-list_name {
+  width: 80%;
+  color: #aaa;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.track-list_time {
+  text-align: right;
+  padding: 10px;
+  color: #aaa;
+  font-size: 12px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  width: 20%;
+}

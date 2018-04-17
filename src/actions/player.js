@@ -16,8 +16,8 @@ export function setDuration(duration) {
   return { type: types.SET_DURATION, payload: duration };
 }
 
-export function updateVolume(volume) {
-  return { type: types.UPDATE_VOLUME, payload: volume };
+export function setVolume(volume) {
+  return { type: types.SET_VOLUME, payload: volume };
 }
 
 export function resetCurrentTrack() {

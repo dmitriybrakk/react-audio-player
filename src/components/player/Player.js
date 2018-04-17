@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 
-import { formatTime, offsetLeft } from '../../utils';
+import Controls from '../controls/Controls';
 
-import NextIcon from '../svg/Next';
-import PreviousIcon from '../svg/Previous';
-import PlayIcon from '../svg/Play';
-import PauseIcon from '../svg/Pause';
 import SpeakerIcon from '../svg/Speaker';
+
+import { formatTime, getLeftOffset } from '../../utils';
 
 import './Player.css';
 
@@ -15,7 +13,8 @@ export default class Player extends Component {
     super();
 
     this.state = {
-      inSetProgressMode: false
+      inSetProgressMode: false,
+      inSetVolumeMode: false
     };
 
     this.isProgressDirty = false;
@@ -40,14 +39,16 @@ export default class Player extends Component {
       const { onSetProgress } = this.props;
 
       if (this.state.inSetProgressMode) {
-        const progress = (evt.clientX - offsetLeft(this._progressBar)) / this._progressBar.clientWidth;
+        const progress = (evt.clientX - getLeftOffset(this._progressBar)) / this._progressBar.clientWidth;
         this.isProgressDirty = true;
         onSetProgress(progress);
       }
     };
 
     handleUpdateProgress = () => {
-      const { onSetProgress, playerState, onPlayNext } = this.props;
+      const {
+        onSetProgress, playerState, onPlayNext
+      } = this.props;
 
       if (this._player) {
         if (!this.isProgressDirty && playerState.isPlaying) {
@@ -60,14 +61,39 @@ export default class Player extends Component {
       }
     };
 
+    handleStartSetVolume = (evt) => {
+      this.setState({
+        inSetVolumeMode: true
+      });
+      this.handleSetVolume(evt);
+    };
+
+    handleStopSetVolume = (evt) => {
+      this.setState({
+        inSetVolumeMode: false
+      });
+      this.handleSetVolume(evt);
+    };
+
+    handleSetVolume = (evt) => {
+      const { onSetVolume } = this.props;
+
+      if (this.state.inSetVolumeMode) {
+        const volume = (evt.clientX - getLeftOffset(this._volumeBar)) / this._volumeBar.clientWidth;
+
+        onSetVolume(volume);
+
+        this._player.volume = volume;
+      }
+    };
+
     render() {
       const {
         currentTrack,
         playerState,
         onPlayPrevious,
         onPlayNext,
-        onPlay,
-        onPause,
+        onTogglePlay,
       } = this.props;
       let currentTime = 0;
       let totalTime = 0;
@@ -85,35 +111,49 @@ export default class Player extends Component {
 
       return (
         <div className="player">
-          <div className="controls">
-            <button onClick={onPlayPrevious}><PreviousIcon /></button>
-            {!playerState.isPlaying && (
-              <button onClick={onPlay}><PlayIcon /></button>
-            )}
-            {playerState.isPlaying && (
-              <button onClick={onPause}><PauseIcon /></button>
-            )}
-            <button onClick={onPlayNext}><NextIcon /></button>
-          </div>
+          <Controls
+            playerState={playerState}
+            onTogglePlay={onTogglePlay}
+            onPlayPrevious={onPlayPrevious}
+            onPlayNext={onPlayNext}
+          />
+
           <div
+            className="progress-bar"
+            ref={(ref) => { this._progressBar = ref; }}
             onMouseDown={this.handleStartSetProgress}
             onMouseMove={this.handleSetProgress}
             onMouseLeave={this.handleStopSetProgress}
             onMouseUp={this.handleStopSetProgress}
-            className="progress"
           >
-            <div ref={(ref) => { this._progressBar = ref; }} className="bar">
-              <div style={{ width: `${this.props.playerState.progress * 100}%` }} />
-            </div>
+            <div
+              className="progress-bar-track"
+              style={{ width: `${playerState.progress * 100}%` }}
+            />
           </div>
-          <div className="time">
+          <div className="progress-bar-time">
             {formatTime(currentTime)} / {formatTime(totalTime)}
           </div>
+
+          <div className="progress-bar-volume-handle">
+            <SpeakerIcon />
+          </div>
+
+          <div
+            className="progress-bar progress-bar-volume"
+            ref={(ref) => { this._volumeBar = ref; }}
+            onMouseDown={this.handleStartSetVolume}
+            onMouseMove={this.handleSetVolume}
+            onMouseLeave={this.handleStopSetVolume}
+            onMouseUp={this.handleStopSetVolume}
+          >
+            <div className="progress-bar-track" style={{ width: `${playerState.volume * 100}%` }} />
+          </div>
+
           <audio
             ref={(ref) => { this._player = ref; }}
             autoPlay={playerState.isPlaying}
             src={currentTrack.audioFile}
-            volume={playerState.volume}
           />
         </div>
       );

@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { getSongs, playNext, playPrevious, selectTrack, filterTracksByQuery } from '../actions/tracks';
 
 import { App } from '../components/app/App';
-import { pause, play, setProgress, setDuration, updateVolume, resetCurrentTrack } from '../actions/player';
+import { pause, play, setProgress, setVolume, setDuration, resetCurrentTrack } from '../actions/player';
 
 const mapStateToProps = state => ({
   playlist: state.tracksReducer.playlist,
@@ -21,8 +21,8 @@ const mapDispatchToProps = dispatch => ({
     play,
     pause,
     setProgress,
+    setVolume,
     setDuration,
-    updateVolume,
     selectTrack,
     resetCurrentTrack,
     filterTracksByQuery

@@ -29,7 +29,7 @@ export default (state = initialState, action) => {
         ...state,
         duration: action.payload
       };
-    case types.UPDATE_VOLUME:
+    case types.SET_VOLUME:
       return {
         ...state,
         volume: action.payload

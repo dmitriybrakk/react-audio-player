@@ -3,7 +3,12 @@
   margin: 20px auto;
 }
 
-.app > .input {
-  width: 100%;
+input {
+  width: 95%;
   margin: 20px;
+}
+
+.track-list {
+  width: 95%;
+  margin: 0 20px;
 }

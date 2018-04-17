@@ -12,22 +12,25 @@ export class App extends Component {
     actions.getSongs();
   }
 
+  resetCurrentTrack = () => {
+    const { actions, playerState } = this.props;
+
+    if (playerState.progress > 0) {
+      actions.resetCurrentTrack();
+    }
+  };
+
   handleClickTrack = (track) => {
-    const { currentTrack, playerState, actions } = this.props;
+    const { currentTrack, actions } = this.props;
 
     if (currentTrack.id === track.id) {
-      if (playerState.isPlaying) {
-        this.handlePause();
-      } else {
-        this.handlePlay();
-      }
+      this.handleTogglePlay();
     } else {
-      if (playerState.progress > 0) {
-        actions.resetCurrentTrack();
-      }
+      this.resetCurrentTrack();
 
       actions.selectTrack(track);
       actions.setDuration(this._audio._player.duration);
+
       this.handlePlay();
     }
   };
@@ -35,34 +38,53 @@ export class App extends Component {
     handlePlayPrevious = () => {
       const { actions } = this.props;
 
-      actions.resetCurrentTrack();
+      this.resetCurrentTrack();
+
+      actions.setDuration(this._audio._player.duration);
       actions.playPrevious();
     };
 
     handlePlayNext = () => {
       const { actions } = this.props;
 
-      actions.resetCurrentTrack();
+      this.resetCurrentTrack();
+
+      actions.setDuration(this._audio._player.duration);
       actions.playNext();
     };
 
     handlePlay = () => {
-      const { actions, playerState } = this.props;
-      if (!playerState.duration) {
-        actions.setDuration(this._audio._player.duration);
-      }
+      const { actions } = this.props;
 
       actions.play();
       this._audio._player.play();
     };
 
     handlePause = () => {
-      this.props.actions.pause();
+      const { actions } = this.props;
+      actions.pause();
       this._audio._player.pause();
     };
 
+    handleTogglePlay = () => {
+      const { actions, playerState } = this.props;
+      if (!playerState.duration) {
+        actions.setDuration(this._audio._player.duration);
+      }
+
+      if (!playerState.isPlaying) {
+        this.handlePlay();
+      } else {
+        this.handlePause();
+      }
+    };
+
     handleSetProgress = (progress) => {
-      this.props.actions.setProgress(progress);
+      this.props.actions.setProgress(progress === null ? 0 : progress);
+    };
+
+    handleSetVolume = (volume) => {
+      this.props.actions.setVolume(volume);
     };
 
     handleChangeInput = (e) => {
@@ -72,14 +94,13 @@ export class App extends Component {
       if (!searchQuery) {
         actions.filterTracksByQuery(playlist);
       } else {
-        const filteredTracksByArtists = playlist.filter(t => (new RegExp(searchQuery, 'i').test(t.artist)));
-        const filteredTracksByTitle = playlist.filter(t => (new RegExp(searchQuery, 'i').test(t.title)));
+        const filteredTracks = playlist.filter((t) => {
+          const regex = new RegExp(searchQuery, 'i');
 
-        if (filteredTracksByArtists.length) {
-          actions.filterTracksByQuery(filteredTracksByArtists);
-        } else if (filteredTracksByTitle.length) {
-          actions.filterTracksByQuery(filteredTracksByTitle);
-        }
+          return regex.test(t.artist) || regex.test(t.title);
+        });
+
+        actions.filterTracksByQuery(filteredTracks);
       }
     };
 
@@ -94,22 +115,29 @@ export class App extends Component {
             playerState={playerState}
             onPlayPrevious={this.handlePlayPrevious}
             onPlayNext={this.handlePlayNext}
-            onPlay={this.handlePlay}
-            onPause={this.handlePause}
+            onTogglePlay={this.handleTogglePlay}
             onSetProgress={this.handleSetProgress}
+            onSetVolume={this.handleSetVolume}
           />
-          <div className="input">
-            <input type="search" placeholder="Search for artists or tracks" onChange={this.handleChangeInput} />
+
+          <input type="search" placeholder="Search for artists or tracks" onChange={this.handleChangeInput} />
+
+          <div className="track-list">
+            {!!filteredTracks.length && filteredTracks.map(track => (
+              <Track
+                key={track.id}
+                track={track}
+                playerState={playerState}
+                onClickTrack={this.handleClickTrack}
+                isTrackSelected={currentTrack.id === track.id}
+              />
+                ))}
+            {!filteredTracks.length && (
+              <div>
+                    No results matching your query
+              </div>
+              )}
           </div>
-          {filteredTracks.length && filteredTracks.map(track => (
-            <Track
-              key={track.id}
-              track={track}
-              playerState={playerState}
-              onClickTrack={this.handleClickTrack}
-              isTrackSelected={currentTrack.id === track.id}
-            />
-            ))}
         </div>
       );
     }

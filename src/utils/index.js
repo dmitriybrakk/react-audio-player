@@ -26,7 +26,7 @@ export const formatTime = (s) => {
   return `${format2Number(minutes)}:${format2Number(seconds)}`;
 };
 
-export const offsetLeft = (el) => {
+export const getLeftOffset = (el) => {
   let left = 0;
   while (el && el !== document) {
     left += el.offsetLeft;
