@@ -2,8 +2,8 @@
 
 `git clone https://github.com/dmitriybrakk/react-audio-player.git`
 
-`npm install`
+`yarn install`
 
-`npm start`
+`yarn start`
 
 `open localhost:3000`
